@@ -18,6 +18,15 @@ app.get('/', (req, res) => {
     res.send('Welcome to the Blog API!');
 });
 
+// POST route to create a new blog post
+app.post('/posts', (req, res) => {
+    const { title, content } = req.body;
+    if (!title || !content) {
+        return res.status(400).json({ message: 'Title and content are required' });
+    }
+    res.status(201).json({ message: 'Post created successfully', post: { title, content } });
+});
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
