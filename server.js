@@ -20,10 +20,17 @@ app.get('/', (req, res) => {
     console.log(process.env.MONGODB_URL);
 });
 
+app.get('/register', (req, res) => {
+    res.send('Welcome to the Register ');
+ 
+});app.get('/login', (req, res) => {
+    res.send('Welcome to the Login page');
+});
+
 // Define Mongoose Schema & Model
 const postSchema = new mongoose.Schema({
-    title: String,
-    content: String,
+    username: String,
+    password: String,
 }, { timestamps: true });
 
 const Post = mongoose.model('Post', postSchema);
@@ -31,13 +38,13 @@ const Post = mongoose.model('Post', postSchema);
 // POST route to create a new blog post
 app.post('/posts', async (req, res) => {
     try {
-        const { title, content } = req.body;
-        if (!title || !content) {
-            return res.status(400).json({ message: 'Title and content are required' });
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ message: 'username and password are required' });
         }
 
         // Create a new blog post and save to MongoDB
-        const newPost = new Post({ title, content });
+        const newPost = new Post({ username, password });
         await newPost.save();
 
         res.status(201).json({ message: 'Post created successfully', post: newPost });
