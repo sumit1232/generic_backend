@@ -16,15 +16,34 @@ app.use(cors()); // Enable CORS for cross-origin requests
 // test
 app.get('/', (req, res) => {
     res.send('Welcome to the Blog API!');
+    console.log("database");
+    console.log(process.env.MONGODB_URL);
 });
 
+// Define Mongoose Schema & Model
+const postSchema = new mongoose.Schema({
+    title: String,
+    content: String,
+}, { timestamps: true });
+
+const Post = mongoose.model('Post', postSchema);
+
 // POST route to create a new blog post
-app.post('/posts', (req, res) => {
-    const { title, content } = req.body;
-    if (!title || !content) {
-        return res.status(400).json({ message: 'Title and content are required' });
+app.post('/posts', async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        if (!title || !content) {
+            return res.status(400).json({ message: 'Title and content are required' });
+        }
+
+        // Create a new blog post and save to MongoDB
+        const newPost = new Post({ title, content });
+        await newPost.save();
+
+        res.status(201).json({ message: 'Post created successfully', post: newPost });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
-    res.status(201).json({ message: 'Post created successfully', post: { title, content } });
 });
 
 // Connect to MongoDB
